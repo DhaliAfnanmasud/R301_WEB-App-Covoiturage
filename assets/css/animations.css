@@ -1,0 +1,330 @@
+/* ==========================================================
+   animations.css : à charger APRÈS style.css
+   Mouvements volontairement discrets, cohérents avec la palette
+   ========================================================== */
+
+:root {
+  --ok: #2f855a;
+  --err: #c53030;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---------- 1. Apparition progressive ----------
+   La classe "js" est posée sur <html> par un petit script dans <head> :
+   sans JavaScript, rien n'est caché. */
+.js
+  :is(main > *:not(form):not(table), main form p, main tbody tr):not(
+    .is-visible
+  ) {
+  opacity: 0;
+}
+
+.js :is(main > *:not(form):not(table), main form p, main tbody tr).is-visible {
+  /* "backwards" : l'état de départ s'applique pendant le délai,
+     puis l'élément reprend son style normal (le survol reste libre) */
+  animation: apparition 0.45s var(--ease-out) backwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes apparition {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Les liens "en ligne" ne peuvent pas être déplacés : on les passe en inline-block */
+main > a {
+  display: inline-block;
+}
+
+/* Entrée de l'en-tête, une seule fois au chargement */
+header {
+  animation: descente 0.5s var(--ease-out) backwards;
+}
+
+@keyframes descente {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* ---------- 2. Bandeaux de messages flash ---------- */
+.alert {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  animation: alerte-entree 0.4s var(--ease-out) backwards;
+  transition:
+    opacity 0.35s ease,
+    max-height 0.4s ease,
+    margin 0.4s ease,
+    padding 0.4s ease,
+    border-width 0.4s ease,
+    transform 0.35s ease;
+}
+
+/* Durée d'affichage selon la gravité : une erreur reste plus longtemps */
+.alert-success {
+  --alert-duree: 4s;
+}
+.alert-info {
+  --alert-duree: 5s;
+}
+.alert-warning {
+  --alert-duree: 6s;
+}
+.alert-danger {
+  --alert-duree: 8s;
+}
+
+/* Barre de temps restant. Sa fin (animationend) déclenche la fermeture,
+   et elle se met en pause au survol. */
+.alert::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: currentColor;
+  opacity: 0.35;
+  transform-origin: left;
+  animation: alerte-minuteur var(--alert-duree, 5s) linear forwards;
+}
+
+.alert:hover::after {
+  animation-play-state: paused;
+}
+
+.alert--leaving {
+  opacity: 0;
+  transform: translateY(-8px);
+  max-height: 0 !important;
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+}
+
+@keyframes alerte-entree {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes alerte-minuteur {
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* ---------- 3. Effets au survol ---------- */
+
+/* Boutons : léger soulèvement */
+button,
+input[type="submit"],
+.btn {
+  transition:
+    background-color var(--ease),
+    transform var(--ease),
+    box-shadow var(--ease);
+}
+
+button:hover,
+input[type="submit"]:hover,
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-btn);
+}
+
+/* À redéclarer après :hover, sinon l'appui n'est pas visible */
+button:active,
+input[type="submit"]:active,
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* Navigation : l'icône cœur bat au survol */
+nav a img {
+  vertical-align: middle;
+  transition: transform var(--ease);
+}
+
+nav a:hover img {
+  transform: translateY(-2px) scale(1.15);
+}
+
+/* Lignes de liste : ajouter class="liste-item" sur les <p> des vues list.php */
+.liste-item {
+  padding: 0.5rem 0.9rem;
+  border-left: 3px solid transparent;
+  border-radius: var(--radius-s);
+  transition:
+    background-color var(--ease),
+    border-color var(--ease),
+    transform var(--ease);
+}
+
+.liste-item:hover {
+  background: var(--row-hover);
+  border-left-color: var(--link);
+  transform: translateX(6px);
+}
+
+/* Lignes de tableau et cartes */
+tbody tr {
+  transition: background-color var(--ease);
+}
+
+.card {
+  transition:
+    transform var(--ease),
+    border-color var(--ease),
+    box-shadow var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--secondary);
+  box-shadow: var(--shadow-m);
+}
+
+/* ---------- 4. Retour visuel sur les formulaires ----------
+   Sélecteurs volontairement précis pour passer devant ceux de style.css */
+form
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+    select,
+    textarea
+  ).is-valid {
+  border-color: var(--ok);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f855a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 18px;
+}
+
+form input[type="number"].is-valid:not([type="submit"]) {
+  background-position: right 2.4rem center;
+}
+
+form
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+    select,
+    textarea
+  ).is-invalid {
+  border-color: var(--err);
+  animation: secousse 0.4s ease;
+}
+
+form
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+    select,
+    textarea
+  ).is-valid:focus {
+  box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.25);
+}
+
+form
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+    select,
+    textarea
+  ).is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(197, 48, 48, 0.25);
+}
+
+.field-message {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--err);
+  animation: message-entree 0.25s ease;
+}
+
+.field-message:empty {
+  display: none;
+}
+
+@keyframes secousse {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes message-entree {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* ---------- Mode sombre : validation plus claire pour rester lisible ---------- */
+:root[data-theme="dark"] {
+  --ok: #6fcf97;
+  --err: #f28b82;
+}
+
+:root[data-theme="dark"]
+  form
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+    select,
+    textarea
+  ).is-valid {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236fcf97' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+}
+
+:root[data-theme="dark"]
+  form
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+    select,
+    textarea
+  ).is-valid:focus {
+  box-shadow: 0 0 0 3px rgba(111, 207, 151, 0.25);
+}
+
+:root[data-theme="dark"]
+  form
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+    select,
+    textarea
+  ).is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(242, 139, 130, 0.25);
+}
+
+/* ---------- Accessibilité : pas de mouvement si l'utilisateur le demande ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Sans animation, la barre de temps n'a plus de sens : les bandeaux restent affichés */
+  .alert::after {
+    display: none;
+  }
+}

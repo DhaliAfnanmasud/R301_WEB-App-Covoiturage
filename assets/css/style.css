@@ -1,0 +1,633 @@
+/* Police Inter */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* ==========================================================
+   Palette et thèmes
+   Les 5 couleurs de base ne changent jamais. Les "rôles" ci-dessous
+   (texte, fond de carte, bordures…) sont redéfinis pour le mode sombre.
+   ========================================================== */
+:root {
+  /* Palette de base */
+  --primary: #0b1f3b;
+  --accent: #2563eb;
+  --secondary: #60a5fa;
+  --surface: #dbeafe;
+  --background: #f0f7ff;
+
+  /* Rôles : thème clair (par défaut) */
+  --page-top: var(--background);
+  --page-bottom: var(--surface);
+  --halo: rgba(96, 165, 250, 0.35);
+  --card: var(--background);
+  --paper: #ffffff; /* champs de formulaire et cartes */
+  --text: var(--primary);
+  --text-soft: #3d5278;
+  --border: #bcd5f8;
+  --muted: var(--surface); /* en-têtes de tableau, survol du menu */
+  --link: var(--accent);
+  --link-hover: var(--primary);
+  --link-underline: var(--secondary);
+  --btn-bg: var(--accent);
+  --btn-text: #ffffff;
+  --btn-hover-bg: var(--primary);
+  --btn-hover-text: #ffffff;
+  --nav-active-bg: var(--primary);
+  --nav-active-text: var(--background);
+  --header-bg: rgba(240, 247, 255, 0.85);
+  --footer-bg: var(--primary);
+  --footer-text: var(--surface);
+  --row-hover: rgba(37, 99, 235, 0.06);
+  --placeholder: #7f90ad;
+  --focus-ring: rgba(37, 99, 235, 0.2);
+  --shadow-m: 0 10px 30px rgba(11, 31, 59, 0.12);
+  --shadow-btn: 0 8px 18px rgba(11, 31, 59, 0.25);
+  --heart-filter: none;
+
+  --radius-s: 8px;
+  --radius-m: 14px;
+  --radius-pill: 999px;
+  --ease: 0.2s ease;
+
+  color-scheme: light;
+}
+
+/* Rôles : thème sombre (posé par le script sur <html data-theme="dark">) */
+:root[data-theme="dark"] {
+  --page-top: #0d2446;
+  --page-bottom: #08172c;
+  --halo: rgba(96, 165, 250, 0.18);
+  --card: #0f2747;
+  --paper: #0a1d38;
+  --text: #f0f7ff;
+  --text-soft: #a9bddb;
+  --border: #24406b;
+  --muted: #183358;
+  --link: var(--secondary);
+  --link-hover: #ffffff;
+  --link-underline: var(--accent);
+  --btn-hover-bg: var(--secondary);
+  --btn-hover-text: var(--primary);
+  --nav-active-bg: var(--surface);
+  --nav-active-text: var(--primary);
+  --header-bg: rgba(8, 23, 44, 0.8);
+  --footer-bg: #061223;
+  --footer-text: #a9bddb;
+  --row-hover: rgba(96, 165, 250, 0.1);
+  --placeholder: #6f86a8;
+  --focus-ring: rgba(96, 165, 250, 0.3);
+  --shadow-m: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-btn: 0 8px 18px rgba(0, 0, 0, 0.45);
+  --heart-filter: invert(1);
+
+  color-scheme: dark;
+}
+
+/* Fondu des couleurs au moment du changement de thème (classe posée par theme.js) */
+@media (prefers-reduced-motion: no-preference) {
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition:
+      background-color 0.35s ease,
+      color 0.35s ease,
+      border-color 0.35s ease,
+      box-shadow 0.35s ease !important;
+  }
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", system-ui, sans-serif;
+  line-height: 1.65;
+  color: var(--text);
+  background-color: var(--page-bottom);
+  /* Halo de lumière en haut à gauche, comme sur la palette */
+  background-image:
+    radial-gradient(ellipse 70% 45% at 8% -5%, var(--halo), transparent 70%),
+    linear-gradient(180deg, var(--page-top), var(--page-bottom) 70%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: var(--secondary);
+  color: var(--primary);
+}
+
+/* ---------- En-tête et navigation ---------- */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 1rem 1rem 0; /* espace au-dessus : la navbar est décollée du haut */
+  background: transparent;
+  pointer-events: none; /* le bandeau transparent ne bloque pas les clics */
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Barre en 3 zones : thème à gauche, liens au centre, compte à droite */
+nav {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+  pointer-events: auto;
+}
+
+.nav-gauche {
+  justify-self: start;
+}
+
+.nav-droite {
+  justify-self: end;
+}
+
+/* Sur petit écran : les liens passent sur une ligne à part */
+@media (max-width: 760px) {
+  nav {
+    grid-template-columns: auto 1fr;
+  }
+  .nav-centre {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .nav-indicateur {
+    display: none;
+  }
+}
+
+/* Liens de navigation en forme de pilule, comme les nuanciers */
+nav a {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius-pill);
+  color: var(--text-soft);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color var(--ease),
+    color var(--ease);
+}
+
+nav a:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+nav a[aria-current="page"] {
+  background: transparent;
+  color: var(--text);
+}
+
+/* L'icône cœur est sombre : on l'inverse en mode sombre */
+nav a img {
+  filter: var(--heart-filter);
+}
+
+.nav-indicateur {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 4px;
+  background: var(--link);
+  border-radius: 4px 4px 0 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* La transition n'est activée qu'après le premier placement,
+   pour que la barre n'arrive pas depuis la gauche au chargement */
+.nav-indicateur.anime {
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    width 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.2s ease;
+}
+
+/* ---------- Bouton de changement de thème ---------- */
+.theme-toggle {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  color: var(--text-soft);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition:
+    background-color var(--ease),
+    color var(--ease);
+}
+
+.theme-toggle:hover,
+.theme-toggle:active {
+  color: var(--text);
+  background: var(--muted);
+  box-shadow: none;
+  transform: none;
+}
+
+/* Les deux icônes sont superposées : l'une tourne et s'efface, l'autre arrive */
+.theme-toggle svg {
+  grid-area: 1 / 1;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.3s ease;
+}
+
+/* Mode clair : on montre la lune (= passer en mode sombre) */
+.theme-toggle .icone-soleil {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+:root[data-theme="dark"] .theme-toggle .icone-lune {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+:root[data-theme="dark"] .theme-toggle .icone-soleil {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Contenu principal ---------- */
+main {
+  flex: 1;
+  width: min(900px, calc(100% - 2rem));
+  margin: 2.5rem auto 3.5rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+}
+
+/* Page de formulaire : la carte se resserre autour du formulaire centré */
+main:has(> form) {
+  flex: 0 0 auto;
+  width: min(600px, calc(100% - 2rem));
+  padding: clamp(1rem, 3vw, 1.75rem);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 700;
+}
+
+h2 {
+  margin: 2rem 0 0.75rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+h3 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+p {
+  max-width: 70ch;
+  color: var(--text);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ---------- Liens ---------- */
+main a {
+  color: var(--link);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--link-underline);
+  text-underline-offset: 3px;
+  transition:
+    color var(--ease),
+    text-decoration-color var(--ease);
+}
+
+main a:hover {
+  color: var(--link-hover);
+  text-decoration-color: var(--link);
+}
+
+/* ---------- Listes ---------- */
+main ul,
+main ol {
+  padding-left: 1.4rem;
+}
+
+main li {
+  margin: 0.35rem 0;
+}
+
+main li::marker {
+  color: var(--secondary);
+}
+
+/* ---------- Formulaires ---------- */
+form {
+  display: grid;
+  gap: 1rem;
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text-soft);
+}
+
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+select,
+textarea {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  color: var(--text);
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  transition:
+    border-color var(--ease),
+    box-shadow var(--ease);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--placeholder);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):hover,
+select:hover,
+textarea:hover {
+  border-color: var(--secondary);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--accent);
+}
+
+/* ---------- Boutons ---------- */
+button,
+input[type="submit"],
+.btn {
+  display: inline-block;
+  padding: 0.7rem 1.6rem;
+  font-weight: 600;
+  color: var(--btn-text);
+  background: var(--btn-bg);
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color var(--ease),
+    color var(--ease),
+    transform var(--ease);
+}
+
+button:hover,
+input[type="submit"]:hover,
+.btn:hover {
+  background: var(--btn-hover-bg);
+  color: var(--btn-hover-text);
+}
+
+button:active,
+input[type="submit"]:active,
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Bouton secondaire : ajouter class="secondary" */
+button.secondary,
+.btn.secondary {
+  color: var(--link);
+  background: transparent;
+  border: 1px solid var(--link);
+}
+
+button.secondary:hover,
+.btn.secondary:hover {
+  color: var(--text);
+  background: var(--muted);
+}
+
+/* ---------- Tableaux ---------- */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+}
+
+th,
+td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  color: var(--text);
+  background: var(--muted);
+}
+
+td {
+  border-top: 1px solid var(--border);
+}
+
+tbody tr:hover {
+  background: var(--row-hover);
+}
+
+/* ---------- Code et citations ---------- */
+code,
+pre {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+code {
+  padding: 0.15em 0.4em;
+  background: var(--muted);
+  border-radius: 6px;
+}
+
+pre {
+  padding: 1rem;
+  overflow-x: auto;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+}
+
+pre code {
+  padding: 0;
+  background: none;
+}
+
+blockquote {
+  margin: 1.5rem 0;
+  padding: 0.5rem 1.25rem;
+  color: var(--text-soft);
+  border-left: 3px solid var(--secondary);
+}
+
+/* ---------- Cartes (optionnel : <div class="card">) ---------- */
+.card {
+  padding: 1.25rem;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+}
+
+/* ---------- Pied de page ---------- */
+footer {
+  margin-top: auto;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--footer-text);
+  background: var(--footer-bg);
+}
+
+footer p {
+  max-width: none;
+  margin: 0;
+  color: inherit;
+}
+
+/* ---------- Accessibilité ---------- */
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 600px) {
+  main {
+    margin-top: 1.25rem;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+/* Bootstrap alerts */
+.alert {
+  padding: 15px;
+  margin: 20px auto 0px;
+  max-width: 600px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 20px;
+}
+.alert-success {
+  color: #3c763d;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+.alert-info {
+  color: #31708f;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+.alert-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
